@@ -1,0 +1,32 @@
+name: Node.js Tests
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: 'Create server env file'
+      working-directory: /server
+      # Echo a secret into a file and then cat the file to see the secret in the logs, do not use pipe
+      run: |
+        echo "${{ secrets.DEV_SERVER_ENV }}" >> .env
+        cat .env
+
+    - name: 'Create client env file'
+      working-directory: /client
+      run: |
+        echo "${{ secrets.DEV_CLIENT_ENV }}" >> .env
+        cat .env
