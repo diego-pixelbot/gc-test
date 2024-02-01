@@ -27,8 +27,12 @@ jobs:
         foldersOnly: true
         format: csv
 
-    - name: Echo
-      id: echo_step
+    - name: Echov1
+      id: echo_stepv1
+      run: echo ${{ steps.get_changed.outputs.changed }}
+
+    - name: Echov2
+      id: echo_stepv2
       run: echo "output=${{ steps.get_changed.outputs.changed }}" >> "$GITHUB_OUTPUT"
 
   check_output:
