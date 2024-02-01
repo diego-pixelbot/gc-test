@@ -9,8 +9,9 @@ jobs:
   check:
     name: Check files
     outputs:
-      run_job: ${{ steps.check_files.outputs.run_job }}
+      output1: ${{ steps.check_files.outputs.output }}
     runs-on: ubuntu-latest
+
     steps:
 
     - name: Checkout code
@@ -28,14 +29,24 @@ jobs:
 
     - name: Echo
       id: echo_step
-      run: echo ${{ steps.get_changed.outputs.changed }}
+      run: echo ${{ steps.get_changed.outputs.changed }} >> "$GITHUB_OUTPUT"
 
-  run_if_client:
-    name: Run if client detected
+  check_output:
+    name: Check output
     needs: check
-    if: contains(needs.check.outputs.run_job, 'client')
     runs-on: ubuntu-latest
     steps:
-      - name: Your Job Steps
+      - env:
+          RUN_JOB: ${{ needs.check.outputs.output1 }}
         run: |
-          echo "Client detected"
+          echo "Output of check job: $RUN_JOB"
+
+  # run_if_client:
+  #   name: Run if client detected
+  #   needs: check
+  #   if: contains(needs.check.outputs.run_job, 'client')
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Your Job Steps
+  #       run: |
+  #         echo "Client detected"
