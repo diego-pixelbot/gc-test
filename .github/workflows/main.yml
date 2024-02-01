@@ -18,7 +18,7 @@ jobs:
         fetch-depth: 2
 
     - name: check modified files
-      uses: Stockopedia/action-get-changed-files@v1
+      uses: Stockopedia/action-get-changed-files@v2.0.0
       id: get_changed
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
