@@ -1,32 +1,34 @@
-name: Node.js Tests
+name: CI/CD Workflow
 
 on:
   push:
     branches:
-      - '*'
+      - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    env:
-      NODE_ENV: staging
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+    - name: Check for changes in the client directory
+      id: check-client-changes
+      run: |
+        CLIENT_CHANGES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} client)
+        if [ -z "$CLIENT_CHANGES" ]; then
+          echo "No changes in the client directory. Exiting workflow."
+          exit 0
+        else
+          echo "Changes detected in the client directory. Continuing with the workflow."
+        fi
 
-      - name: 'Create server env file'
-        working-directory: ./server
-        run: |
-          echo "${{ secrets.DEV_SERVER_ENV }}" >> .env
-          cat .env
+    - name: Build and deploy client
+      if: steps.check-client-changes.outputs.result == 'true'
+      run: |
+        # Add your build and deploy commands for the client here
 
-      - name: 'Create client env file'
-        working-directory: ./client
-        run: |
-          echo "${{ secrets.DEV_CLIENT_ENV }}" >> .env
-          cat .env
+    - name: Build and deploy server
+      run: |
+        # Add your build and deploy commands for the server here
