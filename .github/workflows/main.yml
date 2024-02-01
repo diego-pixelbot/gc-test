@@ -4,32 +4,26 @@ on:
   push:
     branches:
       - main
-
 jobs:
-  build:
+  check:
+    name: Check files
+    outputs:
+      run_job: ${{ steps.check_files.outputs.run_job }}
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
+    
+    - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
 
-    - name: Check for changes in the client directory
-      id: check-client-changes
-      run: |
-        CLIENT_CHANGES=$(git diff --name-only ${{ github.event.before }}..${{ github.sha }} client)
-        if [ -z "$CLIENT_CHANGES" ]; then
-          echo "No changes in the client directory. Exiting workflow."
-          exit 0
-        else
-          echo "Changes detected in the client directory. Continuing with the workflow."
-        fi
-
-
-    - name: Build and deploy client
-      if: steps.check-client-changes.outputs.result == 'true'
-      run: |
-        # Add your build and deploy commands for the client here
-
-    - name: Build and deploy server
-      run: |
-        # Add your build and deploy commands for the server here
+    - name: check modified files
+      uses: Stockopedia/action-get-changed-files@v1
+      id: get_changed
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        # ignore: "**/*.js" # glob
+        foldersOnly: true # to only include folders in the output
+        format: json # either json, csv or newline
+    - name: Echo
+      run: echo ${{ steps.get_changed.outputs.changed }}
