@@ -9,7 +9,7 @@ jobs:
   check:
     name: Check files
     outputs:
-      output1: ${{ steps.check_files.outputs.output }}
+      output1: ${{ steps.get_changed.outputs.output }}
     runs-on: ubuntu-latest
 
     steps:
