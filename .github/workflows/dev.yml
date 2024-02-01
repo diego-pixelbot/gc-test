@@ -1,0 +1,37 @@
+name: Development | Push to AWS CodeCommits
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      output-validator: ${{ steps.react-detection.outputs.test }}
+    steps:
+      - id: directories-changed
+        uses: Stockopedia/action-get-changed-files@v2.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          foldersOnly: true
+          format: csv
+      - id: react-detection
+        run: echo "test=${{ steps.directories-changed.outputs.changed }}" >> "$GITHUB_OUTPUT"
+      - id: react-echo
+        run: echo "${{ steps.react-detection.outputs.test }}"
+
+  push:
+    runs-on: ubuntu-latest
+    needs: check
+    if: contains(needs.check.outputs.output-validator, 'client')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create Git repository and push to AWS CodeCommit
+        run: |
+          cd client
