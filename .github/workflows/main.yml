@@ -40,8 +40,9 @@ jobs:
     needs: check
     steps:
       - env:
+          EXAMPLE: "example"
           RUN_JOB: ${{ needs.check.outputs.output1 }}
-        run: echo $RUN_JOB
+        run: echo $RUN_JOB $EXAMPLE
 
   # run_if_client:
   #   name: Run if client detected
