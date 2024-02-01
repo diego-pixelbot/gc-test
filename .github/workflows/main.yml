@@ -16,13 +16,7 @@ jobs:
     - name: Check for changes in the client directory
       id: check-client-changes
       run: |
-        CLIENT_CHANGES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} client)
-        if [ -z "$CLIENT_CHANGES" ]; then
-          echo "No changes in the client directory. Exiting workflow."
-          exit 0
-        else
-          echo "Changes detected in the client directory. Continuing with the workflow."
-        fi
+        git diff --exit-code --quiet HEAD^ HEAD client || exit 0
 
     - name: Build and deploy client
       if: steps.check-client-changes.outputs.result == 'true'
