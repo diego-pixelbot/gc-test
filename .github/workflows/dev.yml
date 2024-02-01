@@ -19,7 +19,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           foldersOnly: true
-          format: csv
+          format: newline
       - id: react-detection
         run: echo "test=${{ steps.directories-changed.outputs.changed }}" >> "$GITHUB_OUTPUT"
       - id: react-echo
